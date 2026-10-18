@@ -14,12 +14,11 @@ import AddJobPage from './pages/AddJobPage';
 import EditJobPage from './pages/EditJobPage';
 import SignUp from './pages/SignupPage';
 import Login from './pages/LoginPage';
+import { apiUrl } from './utils/api';
 
 const App = () => {
-  const API_BASE = '/api/jobs';
-
   const addJob = async (newJob) => {
-    const res = await fetch(API_BASE, {
+    const res = await fetch(apiUrl('/api/jobs'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -33,7 +32,7 @@ const App = () => {
   };
 
   const deleteJob = async (id) => {
-    const res = await fetch(`${API_BASE}/${id}`, {
+    const res = await fetch(apiUrl(`/api/jobs/${id}`), {
       method: 'DELETE',
       credentials: 'include',
     });
@@ -45,7 +44,7 @@ const App = () => {
   };
 
   const updateJob = async (job) => {
-    const res = await fetch(`${API_BASE}/${job.id}`, {
+    const res = await fetch(apiUrl(`/api/jobs/${job.id}`), {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',

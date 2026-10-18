@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { apiUrl } from '../utils/api';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -10,10 +11,10 @@ const LoginPage = () => {
     setError('');
 
     try {
-      const res = await fetch('/api/v1/users/login', {
+      const res = await fetch(apiUrl('/api/v1/users/login'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include', // send cookies
+        credentials: 'include',
         body: JSON.stringify({ email, password }),
       });
 

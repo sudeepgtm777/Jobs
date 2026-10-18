@@ -3,6 +3,7 @@ import { useParams, useLoaderData, Link, useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaMapMarker } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import { useAuth } from '../context/AuthContext';
+import { apiUrl } from '../utils/api';
 
 const JobPage = ({ deleteJob }) => {
   const navigate = useNavigate();
@@ -117,10 +118,10 @@ const JobPage = ({ deleteJob }) => {
 };
 
 const jobLoader = async ({ params }) => {
-  const res = await fetch(`/api/jobs/${params.id}`); // remove square brackets
+  const res = await fetch(apiUrl(`/api/jobs/${params.id}`));
   if (!res.ok) throw new Error('Job not found');
   const data = await res.json();
-  return data.data.job; // make sure backend returns the job directly
+  return data.data.job;
 };
 
 export { JobPage as default, jobLoader };

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { apiUrl } from '../utils/api';
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -20,10 +21,10 @@ const SignUp = () => {
     setMessage({ type: '', text: '' });
 
     try {
-      const res = await fetch('/api/v1/users/signup', {
+      const res = await fetch(apiUrl('/api/v1/users/signup'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include', // send/receive cookies
+        credentials: 'include',
         body: JSON.stringify(formData),
       });
 
