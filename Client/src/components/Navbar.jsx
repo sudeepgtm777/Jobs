@@ -1,51 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import { NavLink } from 'react-router-dom';
-import logo from '../assets/images/logo.png';
+import React from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { useAuth } from '../context/AuthContext';
 
 const Navbar = () => {
-  const [loggedIn, setLoggedIn] = useState(false);
-  const [user, setUser] = useState(null);
+  const { loggedIn, user, isAdmin, logout } = useAuth();
+  const navigate = useNavigate();
 
-  // Check login state on mount
-  useEffect(() => {
-    const checkLogin = async () => {
-      try {
-        const res = await fetch('/api/v1/users/isLoggedIn', {
-          method: 'GET',
-          credentials: 'include',
-        });
-
-        const data = await res.json();
-
-        if (res.ok && data.loggedIn) {
-          setLoggedIn(true);
-          setUser(data.user);
-        } else {
-          setLoggedIn(false);
-          setUser(null);
-        }
-      } catch (err) {
-        setLoggedIn(false);
-        setUser(null);
-      }
-    };
-
-    checkLogin();
-  }, []);
-
-  // Handle logout
-  const handleLogout = async () => {
-    try {
-      await fetch('/api/v1/users/logout', {
-        method: 'GET',
-        credentials: 'include',
-      });
-      setLoggedIn(false);
-      setUser(null);
-      window.location.href = '/'; // redirect home
-    } catch (err) {
-      console.error('Logout failed', err);
+  const handleAddJobClick = (e) => {
+    e.preventDefault();
+    if (!isAdmin) {
+      toast.error('Only admin can Add Job');
+      return;
     }
+    navigate('/add-job');
   };
 
   const LinkClass = ({ isActive }) =>
@@ -59,7 +27,11 @@ const Navbar = () => {
         <div className='flex h-20 items-center justify-between'>
           <div className='flex flex-1 items-center justify-center md:items-stretch md:justify-start'>
             <NavLink className='flex flex-shrink-0 items-center mr-4' to='/'>
-              <img className='h-10 w-auto' src={logo} alt='React Jobs' />
+              <img
+                className='h-12 w-12'
+                src='/jobs-logo.svg'
+                alt='Jobs'
+              />
               <span className='hidden md:block text-white text-2xl font-bold ml-2'>
                 Jobs
               </span>
@@ -72,18 +44,20 @@ const Navbar = () => {
                 <NavLink to='/jobs' className={LinkClass}>
                   Jobs
                 </NavLink>
-                <NavLink to='/add-job' className={LinkClass}>
+                <a
+                  href='/add-job'
+                  onClick={handleAddJobClick}
+                  className={LinkClass({ isActive: false })}
+                >
                   Add Job
-                </NavLink>
+                </a>
                 {loggedIn ? (
                   <>
-                    {/* Show first name */}
                     <span className='bg-green-500 hover:bg-green-700 text-white rounded-md px-3 py-2 cursor-pointer'>
                       {user?.name?.split(' ')[0]}
                     </span>
-                    {/* Sign out button */}
                     <button
-                      onClick={handleLogout}
+                      onClick={logout}
                       className={LinkClass({ isActive: false })}
                     >
                       Sign Out

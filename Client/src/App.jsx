@@ -16,48 +16,46 @@ import SignUp from './pages/SignupPage';
 import Login from './pages/LoginPage';
 
 const App = () => {
-  const API_BASE = '/api/jobs'; // Backend base URL
+  const API_BASE = '/api/jobs';
 
-  // Add new Job
   const addJob = async (newJob) => {
-    try {
-      const res = await fetch(API_BASE, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newJob),
-      });
-      if (!res.ok) throw new Error('Failed to add job');
-      return await res.json();
-    } catch (err) {
-      console.error(err);
+    const res = await fetch(API_BASE, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(newJob),
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.message || 'Failed to add job');
     }
+    return await res.json();
   };
 
-  // Delete a Job
   const deleteJob = async (id) => {
-    try {
-      const res = await fetch(`${API_BASE}/${id}`, { method: 'DELETE' });
-      if (!res.ok) throw new Error('Failed to delete job');
-      return true;
-    } catch (err) {
-      console.error(err);
-      return false;
+    const res = await fetch(`${API_BASE}/${id}`, {
+      method: 'DELETE',
+      credentials: 'include',
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.message || 'Failed to delete job');
     }
+    return true;
   };
 
-  // Update a Job
   const updateJob = async (job) => {
-    try {
-      const res = await fetch(`${API_BASE}/${job.id}`, {
-        method: 'PATCH', // PATCH to match backend
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(job),
-      });
-      if (!res.ok) throw new Error('Failed to update job');
-      return await res.json();
-    } catch (err) {
-      console.error(err);
+    const res = await fetch(`${API_BASE}/${job.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(job),
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.message || 'Failed to update job');
     }
+    return await res.json();
   };
 
   const router = createBrowserRouter(

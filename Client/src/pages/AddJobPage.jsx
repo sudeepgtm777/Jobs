@@ -1,7 +1,7 @@
-import React from 'react';
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { useAuth } from '../context/AuthContext';
 
 const AddJobPage = ({ addJobSubmit }) => {
   const [title, setTitle] = useState('');
@@ -15,9 +15,23 @@ const AddJobPage = ({ addJobSubmit }) => {
   const [contactPhone, setContactPhone] = useState('');
 
   const navigate = useNavigate();
+  const { isAdmin, loading } = useAuth();
 
-  const submitForm = (e) => {
+  useEffect(() => {
+    if (loading) return;
+    if (!isAdmin) {
+      toast.error('Only admin can Add Job');
+      navigate('/');
+    }
+  }, [isAdmin, loading, navigate]);
+
+  const submitForm = async (e) => {
     e.preventDefault();
+
+    if (!isAdmin) {
+      toast.error('Only admin can Add Job');
+      return;
+    }
 
     const newJob = {
       title,
@@ -32,12 +46,19 @@ const AddJobPage = ({ addJobSubmit }) => {
         contactPhone,
       },
     };
-    addJobSubmit(newJob);
 
-    toast.success('Job Added successfully!!!');
-
-    return navigate('/jobs');
+    try {
+      await addJobSubmit(newJob);
+      toast.success('Job Added successfully!!!');
+      navigate('/jobs');
+    } catch (err) {
+      toast.error(err.message || 'Failed to add job');
+    }
   };
+
+  if (loading || !isAdmin) {
+    return null;
+  }
 
   return (
     <section className='bg-indigo-50'>

@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLoaderData, useParams, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
 import { toast } from 'react-toastify';
+import { useAuth } from '../context/AuthContext';
 
 const EditJobPage = ({ updateJobSubmit }) => {
   const job = useLoaderData();
@@ -20,9 +20,23 @@ const EditJobPage = ({ updateJobSubmit }) => {
 
   const navigate = useNavigate();
   const { id } = useParams();
+  const { isAdmin, loading } = useAuth();
+
+  useEffect(() => {
+    if (loading) return;
+    if (!isAdmin) {
+      toast.error('Only admin can Edit Job');
+      navigate('/');
+    }
+  }, [isAdmin, loading, navigate]);
 
   const submitForm = async (e) => {
     e.preventDefault();
+
+    if (!isAdmin) {
+      toast.error('Only admin can Edit Job');
+      return;
+    }
 
     const updatedJob = {
       id,
@@ -40,14 +54,18 @@ const EditJobPage = ({ updateJobSubmit }) => {
     };
 
     try {
-      await updateJobSubmit(updatedJob); // wait for backend update
+      await updateJobSubmit(updatedJob);
       toast.success('Job Updated successfully!!!');
       navigate(`/jobs/${id}`);
     } catch (err) {
       console.error(err);
-      toast.error('Failed to update job');
+      toast.error(err.message || 'Failed to update job');
     }
   };
+
+  if (loading || !isAdmin) {
+    return null;
+  }
 
   return (
     <section className='bg-indigo-50'>
